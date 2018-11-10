@@ -1,0 +1,171 @@
+---
+title: "RStudio Server on Talapas"
+subtitle: "UO BGMP 2018 Cohort"
+author: "Kohl Kinning"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_notebook:
+    highlight: pygments
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Intro
+
+
+
+# Set up SSH keys
+
+## Create the RSA Key Pair
+
+The first step is to create the key pair on the client machine, your computer:
+
+```{bash}
+ssh-keygen -t rsa
+```
+
+## Store the keys and passphrase
+
+Once you have entered the Gen Key command, you will get a few more questions:
+
+```
+Enter file in which to save the key (~/.ssh/id_rsa):
+```
+You can press enter here, saving the file to the user home.
+
+```
+Enter passphrase (empty for no passphrase):
+```
+Hit enter twice for no passphrase. This then generates two files in your local '~/.ssh' directory, which looks like this:
+```
+.
+├── id_rsa
+├── id_rsa.pub
+└── known_hosts
+```
+
+Id_rsa is your private key, that can stay in your directory, the id_rsa.pub contains your public key for paired authentication. 
+
+Talapas may have some rsa_key authentication setup already. It may look like:
+
+```
+.
+├── authorized_keys
+├── config
+├── id_ecdsa
+├── id_ecdsa.pub
+├── id_rsa
+├── id_rsa.pub
+├── known_hosts
+└── profile
+```
+
+To add your public key to ~/.ssh/authorized_keys, execute the from your local machine following at your own discretion:
+
+```{bash}
+cat ~/.ssh/id_rsa.pub | ssh kkinning@talapas-ln1.uoregon.edu "cat >> ~/.ssh/authorized_keys"
+```
+
+This step will prompt you for a password because the paired authentication has not been setup yet.
+
+If you see the following message it is because this was the first time you have connected to that server and it must be added to the known hosts on the computer you are connecting to: type yes and hit enter.
+
+```
+The authenticity of host '111.111.11.111 (111.111.11.111)' can't be established.
+ECDSA key fingerprint is fd:fd:d4:f9:77:fe:73:84:e1:55:00:ad:d6:6d:22:fe.
+Are you sure you want to continue connecting (yes/no)? yes
+```
+
+If you setup ssh-keygen without a passphrase, you should now be able to ssh into any of the computational servers without having to type in a password: yay! I know this has saved me lots of time. 
+
+
+# RStudio server
+
+It's time to spin up an RStudio server session on talapas. In some infrastructures, this is installed on the HPC and running all of the time. It's usually not the case if the HOPC has a workload manager like SLURM or Sun Grid Engine. At least in the free version of RStudio server there is no interface between RStudio and the workload manager, so you'd have free reign of whatever resources were available to the client running the server. 
+
+Talapas does support Singularity. Singularity is an operating system virtualization containerization tool. It's a lot like Docker. When you load up a Singularity image all of the parts an apllication needs, such as libraries and other dependencies, are packaged with it. Lucky for us, there is an RStudio server Singularity image of github
+
+The github repo is [here](https://github.com/nickjer/singularity-rstudio).
+
+Request an interactive node on talapas, module load singularity.
+```{bash}
+srun --pty bash
+ml singularity
+```
+
+Retrieve the singularity image.
+```{bash}
+singularity pull --name singularity-rstudio.simg shub://nickjer/singularity-rstudio
+```
+
+Launch the singularity image.
+```{bash}
+singularity run singularity-rstudio.simg
+```
+
+The server is now running and accessible on port 8787 on the node which was assigned. But how can we interface our browser and port 8787 on a single node that was assinged by SLURM? 
+
+# SSH tunnel (Mac)
+
+The first step of this traffic redirection step is build an SSH tunnel on your local machine. This is similar to a VPN, but there is no need for special clients and paid software. There is also so much morectionality--I'd like to see the pay-to-use Cisco client VPN in to an interactive node on an HPC!
+
+Add this to your ~/.ssh/config file. This alias will first ssh in to talapas, and then hop to the node you were assigned. Change the variable to wherever you interactive singularity rstudio-server is currently running (ex. n083).
+```{bash}
+Host talapas_tunnel
+  User $USER_NAME
+  ProxyCommand ssh $USER_NAME@talapas-ln1.uoregon.edu exec nc $ASSIGNED_NODE %p
+```
+
+Build the actual tunnel on port 1337.
+```{bash}
+ssh -D 1337 -f -C -q -N talapas_tunnel
+```
+
++ -D: Tells SSH that we want a SOCKS tunnel on the specified port number (you can choose a number between 1025-65536)
++ -f: Forks the process to the background
++ -C: Compresses the data before sending it
++ -q: Uses quiet mode
++ -N: Tells SSH that no command will be sent once the tunnel is up
+
+We now have an ssh tunnel set up. If we connect to this port, all incoming and outgoing traffic will go through the ssh connection (talapas_tunnel) we set up in the ~/.ssh/config file.
+
+See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel) for more info.
+
+# SSH tunnel (Windows)
+
+Configure your SSH tunnel. See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel) for more info.
+
+1. Open PuTTY
+1. From the Session section, add the Host Name (or IP address) of your server, and the SSH Port (typically 22) Putty Sessions
+1. On the left, navigate to: Connection > SSH > Tunnels
+1. Enter any Source port number between 1025-65536. In this example we've used port 1337Putty Connection>SSH>Tunnel
+1. Select the Dynamic radio button
+1. Click the Add button
+1. Go back to Session on the left
+1. Add a name under Saved Sessions and click the Save button
+1. Now click the Open button to make the connection
+1. Enter your sudo username and server password to log in
+1. You can minimize the PuTTY window now, but don't close it. Your SSH connection should be open.
+
+# SOCKS proxy
+
+Configure your SOCKS proxy using the port chosen above. See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel) for more info.
+
+Across platforms, you can route all Firefox traffic through the proxy. With macOS, you can set a system-wide SOCKS proxy under System Preferences->Network->Proxies.
+
+# RStudio on talapas
+
+Now you have access to port 8787 on the node that you've been assigned. Type $ASSIGNED_NODE:8787 in to the browser and you've got a full RStudio session running on talapas. Within RStudio you can use a terminal, use the GUI to upload or remove files, and run whatever you want. You can even write tutorials.
+
+# Cleaning up
+
+Be sure to cancel your interactive session through slurm, or ctrl-c out of the running singualrity image and exit the interactive node ssh session. In macOS, run `ps aux | grep ssh` and `kill` the PID of the ssh tunnel you set up. This will probably 
+
+
+
+
+
