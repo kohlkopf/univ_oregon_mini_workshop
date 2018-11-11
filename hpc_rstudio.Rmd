@@ -1,16 +1,19 @@
 ---
 title: "RStudio Server on Talapas"
-subtitle: "UO BGMP 2018 Cohort"
 author: "Kohl Kinning"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
+  html_document:
+    df_print: paged
+    toc: yes
   html_notebook:
     highlight: pygments
     theme: cosmo
     toc: yes
     toc_float:
       collapsed: yes
-editor_options: 
+subtitle: UO BGMP 2018 Cohort
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -24,7 +27,7 @@ editor_options:
 
 The first step is to create the key pair on the client machine, your computer:
 
-```{bash}
+```bash
 ssh-keygen -t rsa
 ```
 
@@ -66,7 +69,7 @@ Talapas may have some rsa_key authentication setup already. It may look like:
 
 To add your public key to ~/.ssh/authorized_keys, execute the from your local machine following at your own discretion:
 
-```{bash}
+```bash
 cat ~/.ssh/id_rsa.pub | ssh kkinning@talapas-ln1.uoregon.edu "cat >> ~/.ssh/authorized_keys"
 ```
 
@@ -92,18 +95,18 @@ Talapas does support Singularity. Singularity is an operating system virtualizat
 The github repo is [here](https://github.com/nickjer/singularity-rstudio).
 
 Request an interactive node on talapas, module load singularity.
-```{bash}
+```bash
 srun --pty bash
 ml singularity
 ```
 
 Retrieve the singularity image.
-```{bash}
+```bash
 singularity pull --name singularity-rstudio.simg shub://nickjer/singularity-rstudio
 ```
 
 Launch the singularity image.
-```{bash}
+```bash
 singularity run singularity-rstudio.simg
 ```
 
@@ -114,14 +117,14 @@ The server is now running and accessible on port 8787 on the node which was assi
 The first step of this traffic redirection step is build an SSH tunnel on your local machine. This is similar to a VPN, but there is no need for special clients and paid software. There is also so much morectionality--I'd like to see the pay-to-use Cisco client VPN in to an interactive node on an HPC!
 
 Add this to your ~/.ssh/config file. This alias will first ssh in to talapas, and then hop to the node you were assigned. Change the variable to wherever you interactive singularity rstudio-server is currently running (ex. n083).
-```{bash}
+```bash
 Host talapas_tunnel
   User $USER_NAME
   ProxyCommand ssh $USER_NAME@talapas-ln1.uoregon.edu exec nc $ASSIGNED_NODE %p
 ```
 
 Build the actual tunnel on port 1337.
-```{bash}
+```bash
 ssh -D 1337 -f -C -q -N talapas_tunnel
 ```
 
@@ -164,6 +167,21 @@ Now you have access to port 8787 on the node that you've been assigned. Type $AS
 # Cleaning up
 
 Be sure to cancel your interactive session through slurm, or ctrl-c out of the running singualrity image and exit the interactive node ssh session. In macOS, run `ps aux | grep ssh` and `kill` the PID of the ssh tunnel you set up. This will probably 
+
+# All in one script
+
+Alternatively, you can download the script we wrote to set everything up for you. You browser configuration must be done manually (Firefox or Chromium are compatable with SOCK5 proxy).
+
+```
+$ wget https://github.com/jakevc/rstudio_singularity_slurm/blob/master/rstudio_slurm.sh 
+$ chmod -x rstudio_slurm.sh
+$ ./rstudio_slurm.sh -h 
+Usage: rstudio_slurm.sh [-h] [-n node] [-u remote_user] [-r remote_host] [-p port]
+```
+
+To learn more about this script, please visit [rstudio_singularity_slurm](https://github.com/jakevc/rstudio_singularity_slurm).
+
+
 
 
 
