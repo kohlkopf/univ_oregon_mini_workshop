@@ -31,6 +31,52 @@
 <script src="data:application/x-javascript;base64,CndpbmRvdy5pbml0aWFsaXplU291cmNlRW1iZWQgPSBmdW5jdGlvbihmaWxlbmFtZSkgewogICQoIiNybWQtZG93bmxvYWQtc291cmNlIikuY2xpY2soZnVuY3Rpb24oKSB7CiAgICB2YXIgc3JjID0gJCgiI3JtZC1zb3VyY2UtY29kZSIpLmh0bWwoKTsKICAgIHZhciBhID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnYScpOwogICAgYS5ocmVmID0gImRhdGE6dGV4dC94LXItbWFya2Rvd247YmFzZTY0LCIgKyBzcmM7CiAgICBhLmRvd25sb2FkID0gZmlsZW5hbWU7CiAgICBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKGEpOwogICAgYS5jbGljaygpOwogICAgZG9jdW1lbnQuYm9keS5yZW1vdmVDaGlsZChhKTsKICB9KTsKfTsK"></script>
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+div.sourceCode {
+  overflow-x: visible;
+}
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
 
 
 <style type="text/css">
@@ -262,10 +308,7 @@ div.tocify {
 
 
 <!-- rnb-text-begin -->
-<div id="introduction-to-single-cell-rna-seq" class="section level1">
-<h1>Introduction to single-cell RNA-seq</h1>
-<div id="bulk-rna-seq" class="section level2">
-<h2>Bulk RNA-seq</h2>
+<p><strong>Background</strong> # Introduction to single-cell RNA-seq ## Bulk RNA-seq</p>
 <ul>
 <li>A major breakthrough (replaced microarrays) in the late 00’s and has been widely used since</li>
 <li>Measures the average expression level for each gene across a large population of input cells</li>
@@ -274,7 +317,6 @@ div.tocify {
 <li>Insufficient for studying heterogeneous systems, e.g. early development studies, complex tissues (brain)</li>
 <li>Does not provide insights into the stochastic nature of gene expression</li>
 </ul>
-</div>
 <div id="scrna-seq" class="section level2">
 <h2>scRNA-seq</h2>
 <ul>
@@ -295,16 +337,44 @@ div.tocify {
 
 </div>
 </div>
-</div>
-<div id="ideal-pipeline" class="section level1">
-<h1>Ideal pipeline</h1>
+<div id="ideal-computational-pipeline" class="section level1">
+<h1>Ideal computational pipeline</h1>
+<ul>
+<li><strong>Read processing</strong></li>
+<li>Read quality control (fastQC)</li>
+<li>Adapter and low quality ntd trimming</li>
+<li><strong>Read alignment</strong></li>
+<li>alignment to genome or transcriptome (STAR)</li>
+<li>Quantifiaction</li>
+</ul>
+<hr />
 </div>
 <div id="get-started" class="section level1">
-<h1>Get started</h1>
+<h1><strong>Get started</strong></h1>
+</div>
+<div id="prologue" class="section level1">
+<h1>Prologue</h1>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5zdGFsbC5wYWNrYWdlcyhjKFwiU2V1cmF0XCIsIFwiZHBseXJcIikpXG5cbmxpYnJhcnkoU2V1cmF0KVxubGlicmFyeShkcGx5cilcbmBgYCJ9 -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">&quot;Seurat&quot;</span>, <span class="st">&quot;dplyr&quot;</span>))
+
+<span class="kw">library</span>(Seurat)
+<span class="kw">library</span>(dplyr)</code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>For this tutorial, we will be analyzing the a dataset of Peripheral Blood Mononuclear Cells (PBMC) freely available from 10X Genomics. There are 2,700 single cells that were sequenced on the Illumina NextSeq 500. The raw data can be found here.</p>
+<p>We start by reading in the data. All features in Seurat have been configured to work with sparse matrices which results in significant memory and speed savings for Drop-seq/inDrop/10x data.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGJtYyA8LSBDcmVhdGVTZXVyYXRPYmplY3QocmF3LmRhdGEgPSBwYm1jLmRhdGEsIG1pbi5jZWxscyA9IDMsIG1pbi5nZW5lcyA9IDIwMCwgcHJvamVjdCA9IFwiMTBYX1BCTUNcIilcbmBgYCJ9 -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pbmc &lt;-<span class="st"> </span><span class="kw">CreateSeuratObject</span>(<span class="dt">raw.data =</span> pbmc.data, <span class="dt">min.cells =</span> <span class="dv">3</span>, <span class="dt">min.genes =</span> <span class="dv">200</span>, <span class="dt">project =</span> <span class="st">&quot;10X_PBMC&quot;</span>)</code></pre></div>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAic2NSTkEtU2VxIEFuYWx5c2lzIHwgU2V1cmF0IgpzdWJ0aXRsZTogIlVPIEJHTVAgMjAxOCBDb2hvcnQiCmF1dGhvcjogIktvaGwgS2lubmluZyIKZGF0ZTogImByIGZvcm1hdChTeXMudGltZSgpLCAnJWQgJUIgJVknKWAiCm91dHB1dDoKICBodG1sX25vdGVib29rOgogICAgaGlnaGxpZ2h0OiBweWdtZW50cwogICAgdGhlbWU6IGNvc21vCiAgICB0b2M6IHllcwogICAgdG9jX2Zsb2F0OgogICAgICBjb2xsYXBzZWQ6IHllcwplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGlubGluZQotLS0KCiMgSW50cm9kdWN0aW9uIHRvIHNpbmdsZS1jZWxsIFJOQS1zZXEKIyMgQnVsayBSTkEtc2VxCgorIEEgbWFqb3IgYnJlYWt0aHJvdWdoIChyZXBsYWNlZCBtaWNyb2FycmF5cykgaW4gdGhlIGxhdGUgMDDigJlzIGFuZCBoYXMgYmVlbiB3aWRlbHkgdXNlZCBzaW5jZQorIE1lYXN1cmVzIHRoZSBhdmVyYWdlIGV4cHJlc3Npb24gbGV2ZWwgZm9yIGVhY2ggZ2VuZSBhY3Jvc3MgYSBsYXJnZSBwb3B1bGF0aW9uIG9mIGlucHV0IGNlbGxzCisgVXNlZnVsIGZvciBjb21wYXJhdGl2ZSB0cmFuc2NyaXB0b21pY3MsIGUuZy4gc2FtcGxlcyBvZiB0aGUgc2FtZSB0aXNzdWUgZnJvbSBkaWZmZXJlbnQgc3BlY2llcworIFVzZWZ1bCBmb3IgcXVhbnRpZnlpbmcgZXhwcmVzc2lvbiBzaWduYXR1cmVzIGZyb20gZW5zZW1ibGVzLCBlLmcuIGluIGRpc2Vhc2Ugc3R1ZGllcworIEluc3VmZmljaWVudCBmb3Igc3R1ZHlpbmcgaGV0ZXJvZ2VuZW91cyBzeXN0ZW1zLCBlLmcuIGVhcmx5IGRldmVsb3BtZW50IHN0dWRpZXMsIGNvbXBsZXggdGlzc3VlcyAoYnJhaW4pCisgRG9lcyBub3QgcHJvdmlkZSBpbnNpZ2h0cyBpbnRvIHRoZSBzdG9jaGFzdGljIG5hdHVyZSBvZiBnZW5lIGV4cHJlc3Npb24KCiMjIHNjUk5BLXNlcQorIEEgbmV3IHRlY2hub2xvZ3ksIGZpcnN0IHB1YmxpY2F0aW9uIGJ5IChUYW5nIGV0IGFsLiAyMDA5KQorIERpZCBub3QgZ2FpbiB3aWRlc3ByZWFkIHBvcHVsYXJpdHkgdW50aWwgfjIwMTQgd2hlbiBuZXcgcHJvdG9jb2xzIGFuZCBsb3dlciBzZXF1ZW5jaW5nIGNvc3RzIG1hZGUgaXQgbW9yZSBhY2Nlc3NpYmxlCisgTWVhc3VyZXMgdGhlIGRpc3RyaWJ1dGlvbiBvZiBleHByZXNzaW9uIGxldmVscyBmb3IgZWFjaCBnZW5lIGFjcm9zcyBhIHBvcHVsYXRpb24gb2YgY2VsbHMKKyBBbGxvd3MgdG8gc3R1ZHkgbmV3IGJpb2xvZ2ljYWwgcXVlc3Rpb25zIGluIHdoaWNoIGNlbGwtc3BlY2lmaWMgY2hhbmdlcyBpbiB0cmFuc2NyaXB0b21lIGFyZSBpbXBvcnRhbnQsIGUuZy4gY2VsbCB0eXBlIGlkZW50aWZpY2F0aW9uLCBoZXRlcm9nZW5laXR5IG9mIGNlbGwgcmVzcG9uc2VzLCBzdG9jaGFzdGljaXR5IG9mIGdlbmUgZXhwcmVzc2lvbiwgaW5mZXJlbmNlIG9mIGdlbmUgcmVndWxhdG9yeSBuZXR3b3JrcyBhY3Jvc3MgdGhlIGNlbGxzLgoKKyBDdXJyZW50bHkgdGhlcmUgYXJlIHNldmVyYWwgZGlmZmVyZW50IHByb3RvY29scyBpbiB1c2UsIGUuZy4gU01BUlQtc2VxMiAoUGljZWxsaSBldCBhbC4gMjAxMyksIENFTEwtc2VxIChIYXNoaW1zaG9ueSBldCBhbC4gMjAxMikgYW5kIERyb3Atc2VxIChNYWNvc2tvIGV0IGFsLiAyMDE1KQorIFRoZXJlIGFyZSBhbHNvIGNvbW1lcmNpYWwgcGxhdGZvcm1zIGF2YWlsYWJsZSwgaW5jbHVkaW5nIHRoZSBGbHVpZGlnbSBDMSwgV2FmZXJnZW4gSUNFTEw4IGFuZCB0aGUgMTBYIEdlbm9taWNzIENocm9taXVtCisgU2V2ZXJhbCBjb21wdXRhdGlvbmFsIGFuYWx5c2lzIG1ldGhvZHMgZnJvbSBidWxrIFJOQS1zZXEgY2FuIGJlIHVzZWQKKyBJbiBtb3N0IGNhc2VzIGNvbXB1dGF0aW9uYWwgYW5hbHlzaXMgcmVxdWlyZXMgYWRhcHRhdGlvbiBvZiB0aGUgZXhpc3RpbmcgbWV0aG9kcyBvciBkZXZlbG9wbWVudCBvZiBuZXcgb25lcwoKIyMgc2NSTkEtc2VxIHdvcmtmbG93CiFbXSguL21lZGlhL1JOQS1TZXFfd29ya2Zsb3ctNS5wZGYuanBnKQoKIyBJZGVhbCBwaXBlbGluZQoKIyBHZXQgc3RhcnRlZA==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAic2NSTkEtU2VxIEFuYWx5c2lzIHwgU2V1cmF0IgpzdWJ0aXRsZTogIlVPIEJHTVAgMjAxOCBDb2hvcnQiCmF1dGhvcjogIktvaGwgS2lubmluZyIKZGF0ZTogImByIGZvcm1hdChTeXMudGltZSgpLCAnJWQgJUIgJVknKWAiCm91dHB1dDoKICBodG1sX25vdGVib29rOgogICAgaGlnaGxpZ2h0OiBweWdtZW50cwogICAgdGhlbWU6IGNvc21vCiAgICB0b2M6IHllcwogICAgdG9jX2Zsb2F0OgogICAgICBjb2xsYXBzZWQ6IHllcwplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGlubGluZQotLS0KCioqQmFja2dyb3VuZCoqCiMgSW50cm9kdWN0aW9uIHRvIHNpbmdsZS1jZWxsIFJOQS1zZXEKIyMgQnVsayBSTkEtc2VxCgorIEEgbWFqb3IgYnJlYWt0aHJvdWdoIChyZXBsYWNlZCBtaWNyb2FycmF5cykgaW4gdGhlIGxhdGUgMDDigJlzIGFuZCBoYXMgYmVlbiB3aWRlbHkgdXNlZCBzaW5jZQorIE1lYXN1cmVzIHRoZSBhdmVyYWdlIGV4cHJlc3Npb24gbGV2ZWwgZm9yIGVhY2ggZ2VuZSBhY3Jvc3MgYSBsYXJnZSBwb3B1bGF0aW9uIG9mIGlucHV0IGNlbGxzCisgVXNlZnVsIGZvciBjb21wYXJhdGl2ZSB0cmFuc2NyaXB0b21pY3MsIGUuZy4gc2FtcGxlcyBvZiB0aGUgc2FtZSB0aXNzdWUgZnJvbSBkaWZmZXJlbnQgc3BlY2llcworIFVzZWZ1bCBmb3IgcXVhbnRpZnlpbmcgZXhwcmVzc2lvbiBzaWduYXR1cmVzIGZyb20gZW5zZW1ibGVzLCBlLmcuIGluIGRpc2Vhc2Ugc3R1ZGllcworIEluc3VmZmljaWVudCBmb3Igc3R1ZHlpbmcgaGV0ZXJvZ2VuZW91cyBzeXN0ZW1zLCBlLmcuIGVhcmx5IGRldmVsb3BtZW50IHN0dWRpZXMsIGNvbXBsZXggdGlzc3VlcyAoYnJhaW4pCisgRG9lcyBub3QgcHJvdmlkZSBpbnNpZ2h0cyBpbnRvIHRoZSBzdG9jaGFzdGljIG5hdHVyZSBvZiBnZW5lIGV4cHJlc3Npb24KCiMjIHNjUk5BLXNlcQorIEEgbmV3IHRlY2hub2xvZ3ksIGZpcnN0IHB1YmxpY2F0aW9uIGJ5IChUYW5nIGV0IGFsLiAyMDA5KQorIERpZCBub3QgZ2FpbiB3aWRlc3ByZWFkIHBvcHVsYXJpdHkgdW50aWwgfjIwMTQgd2hlbiBuZXcgcHJvdG9jb2xzIGFuZCBsb3dlciBzZXF1ZW5jaW5nIGNvc3RzIG1hZGUgaXQgbW9yZSBhY2Nlc3NpYmxlCisgTWVhc3VyZXMgdGhlIGRpc3RyaWJ1dGlvbiBvZiBleHByZXNzaW9uIGxldmVscyBmb3IgZWFjaCBnZW5lIGFjcm9zcyBhIHBvcHVsYXRpb24gb2YgY2VsbHMKKyBBbGxvd3MgdG8gc3R1ZHkgbmV3IGJpb2xvZ2ljYWwgcXVlc3Rpb25zIGluIHdoaWNoIGNlbGwtc3BlY2lmaWMgY2hhbmdlcyBpbiB0cmFuc2NyaXB0b21lIGFyZSBpbXBvcnRhbnQsIGUuZy4gY2VsbCB0eXBlIGlkZW50aWZpY2F0aW9uLCBoZXRlcm9nZW5laXR5IG9mIGNlbGwgcmVzcG9uc2VzLCBzdG9jaGFzdGljaXR5IG9mIGdlbmUgZXhwcmVzc2lvbiwgaW5mZXJlbmNlIG9mIGdlbmUgcmVndWxhdG9yeSBuZXR3b3JrcyBhY3Jvc3MgdGhlIGNlbGxzLgoKKyBDdXJyZW50bHkgdGhlcmUgYXJlIHNldmVyYWwgZGlmZmVyZW50IHByb3RvY29scyBpbiB1c2UsIGUuZy4gU01BUlQtc2VxMiAoUGljZWxsaSBldCBhbC4gMjAxMyksIENFTEwtc2VxIChIYXNoaW1zaG9ueSBldCBhbC4gMjAxMikgYW5kIERyb3Atc2VxIChNYWNvc2tvIGV0IGFsLiAyMDE1KQorIFRoZXJlIGFyZSBhbHNvIGNvbW1lcmNpYWwgcGxhdGZvcm1zIGF2YWlsYWJsZSwgaW5jbHVkaW5nIHRoZSBGbHVpZGlnbSBDMSwgV2FmZXJnZW4gSUNFTEw4IGFuZCB0aGUgMTBYIEdlbm9taWNzIENocm9taXVtCisgU2V2ZXJhbCBjb21wdXRhdGlvbmFsIGFuYWx5c2lzIG1ldGhvZHMgZnJvbSBidWxrIFJOQS1zZXEgY2FuIGJlIHVzZWQKKyBJbiBtb3N0IGNhc2VzIGNvbXB1dGF0aW9uYWwgYW5hbHlzaXMgcmVxdWlyZXMgYWRhcHRhdGlvbiBvZiB0aGUgZXhpc3RpbmcgbWV0aG9kcyBvciBkZXZlbG9wbWVudCBvZiBuZXcgb25lcwoKIyMgc2NSTkEtc2VxIHdvcmtmbG93CiFbXSguL21lZGlhL1JOQS1TZXFfd29ya2Zsb3ctNS5wZGYuanBnKQoKIyBJZGVhbCBjb21wdXRhdGlvbmFsIHBpcGVsaW5lCgorICoqUmVhZCBwcm9jZXNzaW5nKioKICArIFJlYWQgcXVhbGl0eSBjb250cm9sIChmYXN0UUMpCiAgKyBBZGFwdGVyIGFuZCBsb3cgcXVhbGl0eSBudGQgdHJpbW1pbmcKKyAqKlJlYWQgYWxpZ25tZW50KioKICArIGFsaWdubWVudCB0byBnZW5vbWUgb3IgdHJhbnNjcmlwdG9tZSAoU1RBUikKICArIFF1YW50aWZpYWN0aW9uCgotLS0KCiMgKipHZXQgc3RhcnRlZCoqCgojIFByb2xvZ3VlCgpgYGB7cn0KaW5zdGFsbC5wYWNrYWdlcyhjKCJTZXVyYXQiLCAiZHBseXIiKSkKCmxpYnJhcnkoU2V1cmF0KQpsaWJyYXJ5KGRwbHlyKQpgYGAKCkZvciB0aGlzIHR1dG9yaWFsLCB3ZSB3aWxsIGJlIGFuYWx5emluZyB0aGUgYSBkYXRhc2V0IG9mIFBlcmlwaGVyYWwgQmxvb2QgTW9ub251Y2xlYXIgQ2VsbHMgKFBCTUMpIGZyZWVseSBhdmFpbGFibGUgZnJvbSAxMFggR2Vub21pY3MuIFRoZXJlIGFyZSAyLDcwMCBzaW5nbGUgY2VsbHMgdGhhdCB3ZXJlIHNlcXVlbmNlZCBvbiB0aGUgSWxsdW1pbmEgTmV4dFNlcSA1MDAuIFRoZSByYXcgZGF0YSBjYW4gYmUgZm91bmQgaGVyZS4KCldlIHN0YXJ0IGJ5IHJlYWRpbmcgaW4gdGhlIGRhdGEuIEFsbCBmZWF0dXJlcyBpbiBTZXVyYXQgaGF2ZSBiZWVuIGNvbmZpZ3VyZWQgdG8gd29yayB3aXRoIHNwYXJzZSBtYXRyaWNlcyB3aGljaCByZXN1bHRzIGluIHNpZ25pZmljYW50IG1lbW9yeSBhbmQgc3BlZWQgc2F2aW5ncyBmb3IgRHJvcC1zZXEvaW5Ecm9wLzEweCBkYXRhLgoKYGBge3J9CnBibWMgPC0gQ3JlYXRlU2V1cmF0T2JqZWN0KHJhdy5kYXRhID0gcGJtYy5kYXRhLCBtaW4uY2VsbHMgPSAzLCBtaW4uZ2VuZXMgPSAyMDAsIHByb2plY3QgPSAiMTBYX1BCTUMiKQpgYGA=</div>
 
 
 </div>
