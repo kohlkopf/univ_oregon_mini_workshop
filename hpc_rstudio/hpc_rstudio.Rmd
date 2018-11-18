@@ -1,5 +1,5 @@
 ---
-title: "RStudio Server on Talapas"
+title: "RStudio Server on talapas"
 author: "Kohl Kinning"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
@@ -35,7 +35,7 @@ Once you have entered the Gen Key command, you will get a few more questions:
 ```
 Enter file in which to save the key (~/.ssh/id_rsa):
 ```
-You can press enter here, saving the file to the user home.
+You can press enter here, saving the file to the user home. If you've already done this, be sure not to overwrite your existing key! You can skip ahead to the `cat` command, sending the public key to talapas.
 
 ```
 Enter passphrase (empty for no passphrase):
@@ -50,7 +50,7 @@ Hit enter twice for no passphrase. This then generates two files in your local '
 
 Id_rsa is your private key, that can stay in your directory, the id_rsa.pub contains your public key for paired authentication. 
 
-Talapas may have some rsa_key authentication setup already. It may look like:
+talapas may have some rsa_key authentication setup already. It may look like:
 
 ```
 .
@@ -63,6 +63,7 @@ Talapas may have some rsa_key authentication setup already. It may look like:
 ├── known_hosts
 └── profile
 ```
+
 
 To add your public key to ~/.ssh/authorized_keys, execute the from your local machine following at your own discretion:
 
@@ -85,13 +86,13 @@ If you setup ssh-keygen without a passphrase, you should now be able to ssh into
 
 # RStudio server
 
-It's time to spin up an RStudio server session on Talapas. In some infrastructures, this is installed on the HPC and running all of the time. It's usually not the case if the HOPC has a workload manager like SLURM or Sun Grid Engine. At least in the free version of RStudio server there is no interface between RStudio and the workload manager, so you'd have free reign of whatever resources were available to the client running the server. 
+It's time to spin up an RStudio server session on talapas. In some infrastructures, this is installed on the HPC and running all of the time. It's usually not the case if the HPC has a workload manager like SLURM or Sun Grid Engine. At least in the free version of RStudio server there is no interface between RStudio and the workload manager, so you'd have free reign of whatever resources were available to the client running the server. 
 
-Talapas does support Singularity. Singularity is an operating system visualization containerization tool. It's a lot like Docker. When you load up a Singularity image all of the parts an application needs, such as libraries and other dependencies, are packaged with it. Lucky for us, there is an RStudio server Singularity image on Github.
+talapas does support Singularity. Singularity is an operating system visualization containerization tool. It's a lot like Docker. When you load up a Singularity image all of the parts an application needs, such as libraries and other dependencies, are packaged with it. Lucky for us, there is an RStudio server Singularity image on Github.
 
 The github repo is [here](https://github.com/nickjer/singularity-rstudio).
 
-Request an interactive node on Talapas, module load singularity.
+Request an interactive node on talapas, module load singularity.
 ```bash
 srun --pty bash
 ml singularity
@@ -111,9 +112,9 @@ The server is now running and accessible on port 8787 on the node which was assi
 
 # SSH tunnel (Mac)
 
-The first step of this traffic redirection step is build an SSH tunnel on your local machine. This is similar to a VPN, but there is no need for special clients and paid software. There is also so much morectionality--I'd like to see the pay-to-use Cisco client VPN in to an interactive node on an HPC!
+The first step of this traffic redirection step is build an SSH tunnel on your local machine. This is similar to a VPN, but there is no need for special clients and paid software.
 
-Add this to your ~/.ssh/config file. This alias will first ssh in to Talapas, and then hop to the node you were assigned. Change the variable to wherever you interactive singularity rstudio-server is currently running (ex. n083).
+Add this to your ~/.ssh/config file. This alias will first ssh in to talapas, and then hop to the node you were assigned. Change the variable to wherever you interactive singularity rstudio-server is currently running (ex. n083).
 ```bash
 Host talapas_tunnel
   User $USER_NAME
@@ -157,9 +158,9 @@ Configure your SOCKS proxy using the port chosen above. See [this tutorial](http
 
 Across platforms, you can route all Firefox traffic through the proxy. With macOS, you can set a system-wide SOCKS proxy under System Preferences->Network->Proxies.
 
-# RStudio on Talapas
+# RStudio on talapas
 
-Now you have access to port 8787 on the node that you've been assigned. Type $ASSIGNED_NODE:8787 in to the browser and you've got a full RStudio session running on Talapas. Within RStudio you can use a terminal, use the GUI to upload or remove files, and run whatever you want. You can even write tutorials.
+Now you have access to port 8787 on the node that you've been assigned. Type n083:8787 (or whichever node you were assignedx) in to the browser and you've got a full RStudio session running on talapas. Within RStudio you can use a terminal, use the GUI to upload or remove files, and run whatever you want. You can even write tutorials.
 
 # Cleaning up
 
@@ -169,10 +170,10 @@ Be sure to cancel your interactive session through slurm, or ctrl-c out of the r
 
 Alternatively, you can download the script we wrote to set everything up for you. You browser configuration must be configured manually (Firefox or Chromium are compatable with SOCKS5 proxy). There is only one port 
 
-```
-$ wget https://github.com/jakevc/rstudio_singularity_slurm/blob/master/rstudio_slurm.sh 
-$ chmod -x rstudio_slurm.sh
-$ ./rstudio_slurm.sh -h 
+```bash
+wget https://github.com/jakevc/rstudio_singularity_slurm/blob/master/rstudio_slurm.sh 
+chmod -x rstudio_slurm.sh
+./rstudio_slurm.sh -h 
 Usage: rstudio_slurm.sh [-h] [-n node] [-u remote_user] [-r remote_host] [-p port]
 ```
 
@@ -219,7 +220,7 @@ done
 shift $((OPTIND -1))
 
 echo "Writing server command." 
-# get commands to run Rstudio server on Talapas 
+# get commands to run Rstudio server on talapas 
 echo "#!/bin/bash
 /usr/sbin/fuser -k 8787/tcp
 module load singularity
@@ -284,7 +285,7 @@ shift $((OPTIND -1))
 
 ## Writing server command
 
-Write the server command to be run on a SLURM node and save it in to a script. Make the script executable and copy it to Talapas, your home directory (~/) using rsync. We use rsync instead of scp because we can retain the original permissions of the file. Remove the rserver.sh script file from your local storage. 
+Write the server command to be run on a SLURM node and save it in to a script. Make the script executable and copy it to talapas, your home directory (~/) using rsync. We use rsync instead of scp because we can retain the original permissions of the file. Remove the rserver.sh script file from your local storage. 
 
 We use module to load Singularity, an operating system virtualization containerization tool. It's a lot like Docker. When you load up a Singularity image all of the parts an apllication needs, such as libraries and other dependencies, are packaged with it. Lucky for us, there is an RStudio server [Singularity image](https://github.com/nickjer/singularity-rstudio) shared on Github. View the image topology [here](https://singularity-hub.org/containers/3409/view). Once we pull the image we can get it running. By default RStudio server forwards traffic to port 8787--this is the port we'll connect to later.
 
@@ -292,7 +293,7 @@ We use module to load Singularity, an operating system virtualization containeri
 
 ```bash
 echo "Writing server command." 
-# get commands to run Rstudio server on Talapas 
+# get commands to run Rstudio server on talapas 
 echo "#!/bin/bash
 /usr/sbin/fuser -k 8787/tcp
 module load singularity
@@ -319,13 +320,13 @@ echo "Starting Rstudio server on $NODE."
 # Start the Rserver
 ssh $USER@$REMOTE -o RemoteCommand="srun -w $NODE rserver.sh" & 
 ```
-But how can we access RStudio running on Talapas?
+But how can we access RStudio running on talapas?
 
 ## Access port 8787
 
 The first step of this traffic redirection step is build an SSH tunnel on your local machine. This is similar to a VPN, but there is no need for special clients and paid software. The SOCKS proxy is essentially an special case of an ssh session, but applications can forward their traffic through the tunnel to the server, and then on the server end, the proxy forwards the traffic out to the general Internet.
 
-This command will create a tunnel from you machine to Talapas, followed by an ssh hop to the node you've been assigned. 
+This command will create a tunnel from you machine to talapas, followed by an ssh hop to the node you've been assigned. 
 
 ```bash
 echo "Create SOCKS5 proxy tunnel from $NODE, through $REMOTE, to localhost:$PORT."
