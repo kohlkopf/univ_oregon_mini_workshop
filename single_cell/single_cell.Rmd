@@ -5,7 +5,6 @@ author: "Kohl Kinning"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   html_notebook:
-    highlight: pygments
     theme: cosmo
     toc: yes
     toc_float:
@@ -14,7 +13,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
-**Background**
+#**Background**
+
 # Introduction to single-cell RNA-seq
 ## Bulk RNA-seq
 
@@ -39,16 +39,8 @@ editor_options:
 ## scRNA-seq workflow
 ![](./media/RNA-Seq_workflow-5.pdf.jpg)
 
-# Ideal computational pipeline
-
-+ **Read processing**
-  + Read quality control (fastQC)
-  + Adapter and low quality ntd trimming
-+ **Read alignment**
-  + alignment to genome or transcriptome (STAR)
-  + Quantifiaction
-
 ---
+#**Analysis pipeline**
 
 # Getting started
 
@@ -57,6 +49,7 @@ For this tutorial, we will be analyzing the a dataset of Peripheral Blood Mononu
 We start by reading in the data. All features in Seurat have been configured to work with sparse matrices which results in significant memory and speed savings for Drop-seq/inDrop/10x data.
 
 ```{r}
+dir.create("./data", showWarnings = TRUE, recursive = FALSE, mode = "0777")
 download.file("https://s3-us-west-2.amazonaws.com/10x.files/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz", destfile = "./data/pbmc3k_filtered_gene_bc_matrices.tar.gz")
 ```
 
@@ -65,10 +58,7 @@ tar xzf ./data/pbmc3k_filtered_gene_bc_matrices.tar.gz -C ./data
 ```
 
 ```{r}
-#install.packages(c("dplyr", "remotes"))
-#install fake hdf5r to get around Seurat breaking on install
-#remotes::install_github("UCSF-TI/fake-hdf5r")
-#install.packages("Seurat")
+install.packages(c("dplyr", "Seurat"))
 
 library(Seurat)
 library(dplyr)
@@ -78,9 +68,7 @@ library(dplyr)
 # Load the PBMC dataset
 pbmc.data <- Read10X("./data/filtered_gene_bc_matrices/hg19/")
 
-# Initialize the Seurat object with the raw (non-normalized data).  Keep all
-# genes expressed in >= 3 cells (~0.1% of the data). Keep all cells with at
-# least 200 detected genes
+# Initialize the Seurat object with the raw (non-normalized data).  Keep all genes expressed in >= 3 cells (~0.1% of the data). Keep all cells with at least 200 detected genes
 pbmc <- CreateSeuratObject(raw.data = pbmc.data, min.cells = 3, min.genes = 200, project = "10X_PBMC")
 ```
 
@@ -93,18 +81,13 @@ The steps below encompass the standard pre-processing workflow for scRNA-seq dat
 While the CreateSeuratObject imposes a basic minimum gene-cutoff, you may want to filter out cells at this stage based on technical or biological parameters. Seurat allows you to easily explore QC metrics and filter cells based on any user-defined criteria. In the example below, we visualize gene and molecule counts, plot their relationship, and exclude cells with a clear outlier number of genes detected as potential multiplets. Of course this is not a guaranteed method to exclude cell doublets, but we include this as an example of filtering user-defined outlier cells. We also filter cells based on the percentage of mitochondrial genes present.
 
 ```{r}
-# The number of genes and UMIs (nGene and nUMI) are automatically calculated
-# for every object by Seurat.  For non-UMI data, nUMI represents the sum of
-# the non-normalized values within a cell We calculate the percentage of
-# mitochondrial genes here and store it in percent.mito using AddMetaData.
-# We use object@raw.data since this represents non-transformed and
-# non-log-normalized counts The % of UMI mapping to MT-genes is a common
-# scRNA-seq QC metric.
+# The number of genes and UMIs (nGene and nUMI) are automatically calculated for every object by Seurat.  For non-UMI data, nUMI represents the sum of the non-normalized values within a cell 
+# We calculate the percentage of mitochondrial genes here and store it in percent.mito using AddMetaData.
+# We use object@raw.data since this represents non-transformed and non-log-normalized counts The % of UMI mapping to MT-genes is a common scRNA-seq QC metric.
 mito.genes <- grep(pattern = "^MT-", x = rownames(x = pbmc@data), value = TRUE)
 percent.mito <- Matrix::colSums(pbmc@raw.data[mito.genes, ])/Matrix::colSums(pbmc@raw.data)
 
-# AddMetaData adds columns to object@meta.data, and is a great place to
-# stash QC stats
+# AddMetaData adds columns to object@meta.data, and is a great place to stash QC stats
 pbmc <- AddMetaData(object = pbmc, metadata = percent.mito, col.name = "percent.mito")
 VlnPlot(object = pbmc, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3)
 ```
@@ -118,10 +101,7 @@ GenePlot(object = pbmc, gene1 = "nUMI", gene2 = "nGene")
 ```
 
 ```{r}
-# We filter out cells that have unique gene counts over 2,500 or less than
-# 200 Note that low.thresholds and high.thresholds are used to define a
-# 'gate'.  -Inf and Inf should be used if you don't want a lower or upper
-# threshold.
+# We filter out cells that have unique gene counts over 2,500 or less than 200 Note that low.thresholds and high.thresholds are used to define a 'gate'.  -Inf and Inf should be used if you don't want a lower or upper threshold.
 pbmc <- FilterCells(object = pbmc, subset.names = c("nGene", "percent.mito"), low.thresholds = c(200, -Inf), high.thresholds = c(2500, 0.05))
 ```
 
@@ -153,8 +133,6 @@ We can regress out cell-cell variation in gene expression driven by batch (if ap
 
 ```{r}
 pbmc <- ScaleData(object = pbmc, vars.to.regress = c("nUMI", "percent.mito"), do.par = TRUE)
-#save(pbmc, file="pbmc_scaled.RData")
-break
 ```
 
 
@@ -174,15 +152,6 @@ VizPCA(object = pbmc, pcs.use = 1:2)
 PCAPlot(object = pbmc, dim.1 = 1, dim.2 = 2)
 ```
 
-```{r}
-# ProjectPCA scores each gene in the dataset (including genes not included
-# in the PCA) based on their correlation with the calculated components.
-# Though we don't use this further here, it can be used to identify markers
-# that are strongly correlated with cellular heterogeneity, but may not have
-# passed through variable gene selection.  The results of the projected PCA
-# can be explored by setting use.full=T in the functions above
-pbmc <- ProjectPCA(object = pbmc, do.print = FALSE)
-```
 
 # Determine statistically significant principal components
 
@@ -191,10 +160,8 @@ To overcome the extensive technical noise in any single gene for scRNA-seq data,
 In Macosko et al, we implemented a resampling test inspired by the jackStraw procedure. We randomly permute a subset of the data (1% by default) and rerun PCA, constructing a ‘null distribution’ of gene scores, and repeat this procedure. We identify ‘significant’ PCs as those who have a strong enrichment of low p-value genes.
 
 ```{r}
-# NOTE: This process can take a long time for big datasets, comment out for
-# expediency.  More approximate techniques such as those implemented in
-# PCElbowPlot() can be used to reduce computation time
-pbmc <- JackStraw(object = pbmc, num.replicate = 100, display.progress = FALSE, do.par = TRUE)
+# NOTE: This process can take a long time for big datasets, comment out for expediency. More approximate techniques such as those implemented in PCElbowPlot() can be used to reduce computation time
+pbmc <- JackStraw(object = pbmc, num.replicate = 100, display.progress = FALSE)
 ```
 
 A more ad hoc method for determining which PCs to use is to look at a plot of the standard deviations of the principle components and draw your cutoff where there is a clear elbow in the graph. This can be done with PCElbowPlot. In this example, it looks like the elbow would fall around PC 9.
@@ -212,11 +179,8 @@ Seurat now includes an graph-based clustering approach compared to (Macosko et a
 The FindClusters function implements the procedure, and contains a resolution parameter that sets the ‘granularity’ of the downstream clustering, with increased values leading to a greater number of clusters. We find that setting this parameter between 0.6-1.2 typically returns good results for single cell datasets of around 3K cells. Optimal resolution often increases for larger datasets. The clusters are saved in the object@ident slot.
 
 ```{r}
-# save.SNN = T saves the SNN so that the clustering algorithm can be rerun
-# using the same graph but with a different resolution value (see docs for
-# full details)
-pbmc <- FindClusters(object = pbmc, reduction.type = "pca", dims.use = 1:10, 
-    resolution = 0.6, print.output = 0, save.SNN = TRUE)
+# save.SNN = T saves the SNN so that the clustering algorithm can be rerun using the same graph but with a different resolution value (see docs for full details)
+pbmc <- FindClusters(object = pbmc, reduction.type = "pca", dims.use = 1:10, resolution = 0.6, print.output = 0, save.SNN = TRUE, force.recalc = TRUE)
 ```
 
 # Run Non-linear dimensional reduction (tSNE)
@@ -237,22 +201,19 @@ The min.pct argument requires a gene to be detected at a minimum percentage in e
 
 ```{r}
 # find all markers of cluster 1
-cluster1.markers <- FindMarkers(object = pbmc, ident.1 = 1, min.pct = 0.25)
+cluster1.markers <- FindMarkers(object = pbmc, ident.1 = 1, min.pct = 0.25, print.bar = FALSE)
 print(x = head(x = cluster1.markers, n = 5))
 ```
 
 ```{r}
 # find all markers distinguishing cluster 5 from clusters 0 and 3
-cluster5.markers <- FindMarkers(object = pbmc, ident.1 = 5, ident.2 = c(0, 3), 
-    min.pct = 0.25)
+cluster5.markers <- FindMarkers(object = pbmc, ident.1 = 5, ident.2 = c(0, 3), min.pct = 0.25, print.bar = FALSE)
 print(x = head(x = cluster5.markers, n = 5))
 ```
 
 ```{r}
-# find markers for every cluster compared to all remaining cells, report
-# only the positive ones
-pbmc.markers <- FindAllMarkers(object = pbmc, only.pos = TRUE, min.pct = 0.25, 
-    thresh.use = 0.25)
+# find markers for every cluster compared to all remaining cells, report only the positive ones
+pbmc.markers <- FindAllMarkers(object = pbmc, only.pos = TRUE, min.pct = 0.25, thresh.use = 0.25, print.bar = FALSE)
 pbmc.markers %>% group_by(cluster) %>% top_n(2, avg_logFC)
 ```
 
@@ -263,18 +224,15 @@ VlnPlot(object = pbmc, features.plot = c("MS4A1", "CD79A"))
 ```
 
 ```{r}
-FeaturePlot(object = pbmc, features.plot = c("MS4A1", "GNLY", "CD3E", "CD14", 
-    "FCER1A", "FCGR3A", "LYZ", "PPBP", "CD8A"), cols.use = c("grey", "blue"), 
-    reduction.use = "tsne")
+FeaturePlot(object = pbmc, features.plot = c("MS4A1", "GNLY", "CD3E", "CD14", "FCER1A", "FCGR3A", "LYZ", "PPBP", "CD8A"), cols.use = c("grey", "blue"), reduction.use = "tsne")
 ```
 
 `DoHeatmap` generates an expression heatmap for given cells and genes. In this case, we are plotting the top 10 markers (or all markers if less than 10) for each cluster
 
-```{r}
+```{r fig.height=20, fig.width=25}
 top10 <- pbmc.markers %>% group_by(cluster) %>% top_n(10, avg_logFC)
-# setting slim.col.label to TRUE will print just the cluster IDS instead of
-# every cell name
-DoHeatmap(object = pbmc, genes.use = top10$gene, slim.col.label = TRUE, remove.key = TRUE)
+# setting slim.col.label to TRUE will print just the cluster IDS instead of every cell name
+DoHeatmap(object = pbmc, genes.use = top10$gene, slim.col.label = TRUE, remove.key = TRUE, cex.row = 8, cex.col = 8, group.label.rot = TRUE)
 ```
 
 
@@ -284,8 +242,7 @@ Fortunately in the case of this dataset, we can use canonical markers from the l
 
 ```{r}
 current.cluster.ids <- c(0, 1, 2, 3, 4, 5, 6, 7)
-new.cluster.ids <- c("CD4 T cells", "CD14+ Monocytes", "B cells", "CD8 T cells", 
-    "FCGR3A+ Monocytes", "NK cells", "Dendritic cells", "Megakaryocytes")
+new.cluster.ids <- c("CD4 T cells", "CD14+ Monocytes", "B cells", "CD8 T cells", "FCGR3A+ Monocytes", "NK cells", "Dendritic cells", "Megakaryocytes")
 pbmc@ident <- plyr::mapvalues(x = pbmc@ident, from = current.cluster.ids, to = new.cluster.ids)
 TSNEPlot(object = pbmc, do.label = TRUE, pt.size = 0.5)
 ```

@@ -14,8 +14,6 @@ editor_options:
   chunk_output_type: inline
 ---
 
-# Intro
-
 
 
 # Set up SSH keys
@@ -93,7 +91,7 @@ The github repo is [here](https://github.com/nickjer/singularity-rstudio).
 
 Request an interactive node on Talapas, module load singularity.
 ```bash
-srun --pty bash
+srun --mem=16000 --pty bash
 ml singularity
 ```
 
@@ -155,7 +153,9 @@ Configure your SSH tunnel. See [this tutorial](https://www.digitalocean.com/comm
 
 Configure your SOCKS proxy using the port chosen above. See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel) for more info.
 
-Across platforms, you can route all Firefox traffic through the proxy. With macOS, you can set a system-wide SOCKS proxy under System Preferences->Network->Proxies.
+Firefox allows a simple interface to route traffic through the proxy. macOS user can also set up a system-wide SOCKS5 proxy System Preferences->Network->Proxies. Users will enter localhost, but the port number for the proxy (3) will be the port specified when invoking the script.
+
+![](https://assets.digitalocean.com/articles/socks5/70cwU1N.png)
 
 # RStudio on Talapas
 
