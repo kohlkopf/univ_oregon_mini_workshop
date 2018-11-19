@@ -139,14 +139,16 @@ See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-rout
 Configure your SSH tunnel. See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel) for more info.
 
 1. Open PuTTY
-1. From the Session section, add the Host Name (or IP address) of your server, and the SSH Port (typically 22) Putty Sessions
-1. On the left, navigate to: Connection > SSH > Tunnels
-1. Enter any Source port number between 1025-65536. In this example we've used port 1337Putty Connection>SSH>Tunnel
-1. Select the Dynamic radio button
-1. Click the Add button
-1. Go back to Session on the left
-1. Add a name under Saved Sessions and click the Save button
-1. Now click the Open button to make the connection
+![](https://assets.digitalocean.com/articles/socks5/wXDz8J7.png)
+1. From the **Session** section, add the **Host Name (or IP address)** of your server, and the SSH **Port** (typically 22) Putty Sessions
+1. On the left, navigate to: **Connection > SSH > Tunnels**
+1. Enter any **Source port** number between 1025-65536. In this example we've used port 1337
+![](https://assets.digitalocean.com/articles/socks5/ZLPgf4V.png)
+1. Select the **Dynamic** radio button
+1. Click the **Add** button
+1. Go back to **Session** on the left
+1. Add a name under **Saved Sessions** and click the **Save** button
+1. Now click the **Open button** to make the connection
 1. Enter your sudo username and server password to log in
 1. You can minimize the PuTTY window now, but don't close it. Your SSH connection should be open.
 
@@ -154,7 +156,7 @@ Configure your SSH tunnel. See [this tutorial](https://www.digitalocean.com/comm
 
 Configure your SOCKS proxy using the port chosen above. See [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-route-web-traffic-securely-without-a-vpn-using-a-socks-tunnel) for more info.
 
-Firefox allows a simple interface to route traffic through the proxy. macOS user can also set up a system-wide SOCKS5 proxy System Preferences->Network->Proxies. Users will enter localhost, but the port number for the proxy (3) will be the port specified when invoking the script.
+Firefox allows a simple interface to route traffic through the proxy. macOS user can also set up a system-wide SOCKS5 proxy System Preferences > Network > Proxies. Users will enter localhost, but the port number for the proxy (3) will be the port specified when invoking the script.
 
 ![](https://assets.digitalocean.com/articles/socks5/70cwU1N.png)
 
@@ -338,7 +340,10 @@ Now everything is in place. You'll just need to tell your applications to access
 
 ## Forward traffic to SOCKS proxy
 
-Firefox allows a simple interface to route traffic through the proxy. macOS user can also set up a system-wide SOCKS5 proxy System Preferences->Network. Users will enter localhost, but the port number for the proxy (3) will be the port specified when invoking the script.
+Firefox allows a simple interface to route traffic through the proxy. macOS user can also set up a system-wide SOCKS5 proxy System Preferences > 
+
+
+Network. Users will enter localhost, but the port number for the proxy (3) will be the port specified when invoking the script.
 
 ![](https://assets.digitalocean.com/articles/socks5/70cwU1N.png)
 
